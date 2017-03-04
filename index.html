@@ -10,7 +10,7 @@
 		<script src="https://d3js.org/d3.v4.min.js"></script>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">		
 		<!-- Importing Google fonts -->
-		<link href="https://fonts.googleapis.com/css?family=Lato%7COpen+Sans:300,600,700%7CRoboto:100,300,700%7CPacifico%7COswald" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,600%7COswald" rel="stylesheet">
 		<style>
 			html, body  {
 				margin: 0;
@@ -39,10 +39,18 @@
 			}
 
 			.arcs path {
-				  stroke-width: 5px;
+				  stroke-width: 4px;
 				  stroke: #fc4e2a;
 				  pointer-events: none;
 				  fill: none;
+			}
+			
+			.city-name {
+				font-family: sans-serif;
+				color:aliceblue;
+				font-weight: bold;
+				font-style: oblique;
+				font-size: 15px;
 			}
 		</style>
 	</head>
@@ -72,10 +80,12 @@
 			var w = 1000, h = 1000;
 			
 			var longestRoute = [
-				{
-				sourceLocation: [94.91542,27.485983],
-				targetLocation: [77.549934,8.079252]
-				}
+				{sourceLocation: [94.91542,27.485983],targetLocation: [77.549934,8.079252]},
+				{sourceLocation: [74.948848,32.728062],targetLocation: [77.549934,8.079252]},
+				{sourceLocation: [74.948848,32.728062],targetLocation: [74.843008,12.86981]},
+				{sourceLocation: [74.948848,32.728062],targetLocation: [77.685235,8.729526]},
+				{sourceLocation: [94.91542,27.485983],targetLocation: [76.957048,8.505891]},
+				{sourceLocation: [74.981272,31.568179],targetLocation: [77.5913,12.97912]}
 			];
 						
 			
@@ -96,6 +106,7 @@
 						.append("svg")
 						.attr("width", w)
 						.attr("height", h);
+			
 			var states = svg.append("g");
 			
 			var arcs = svg.append("g")
@@ -160,6 +171,23 @@
            				.style("opacity", 0.9)
 						.attr("stroke", "black")
 						.attr("stroke-width, 1");
+					
+					var label = svg.selectAll("text")
+								.data(data)
+								.enter()
+								.append("text")
+								.text(function(d) { return d.name; })
+								.attr("x", function(d) { 
+									if(d.name == "Thiruvananthapuram") {
+										return projection([d.lon, d.lat])[0] - 160;
+									} else
+									return projection([d.lon, d.lat])[0] + 10; 
+								})
+								.attr("y", function(d) { 
+									return projection([d.lon, d.lat])[1] + 18; 
+								})
+								.attr("class", "city-name");
+								
 					});
 					
 					arcs.selectAll("path")
