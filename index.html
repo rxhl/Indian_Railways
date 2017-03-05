@@ -157,7 +157,7 @@
 						
 			/* Legend ends */
 			
-			var data = d3.csv("data/indian-states.csv", function(data) {
+			d3.csv("data/indian-states.csv", function(data) {
 				
 				color.domain([
 					d3.min(data, function(d) { return d.value; }),
@@ -216,7 +216,7 @@
 						.attr("stroke", "black")
 						.attr("stroke-width, 1");
 					
-					var label = svg.selectAll("text")
+					svg.selectAll("text")
 								.data(data)
 								.enter()
 								.append("text")
@@ -244,10 +244,7 @@
 				});
 				
 			});
-			
-			
-			
-			
+	
 			// Function to create arcs
 			function makeArc(d, sourceName, targetName, bend){
 			var sourceLngLat = d[sourceName],
