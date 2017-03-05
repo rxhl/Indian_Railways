@@ -40,7 +40,7 @@
 			}
 
 			.arcs path {
-				  stroke-width: 4px;
+				  stroke-width: 6px;
 				  stroke: #fc4e2a;
 				  pointer-events: none;
 				  fill: none;
@@ -48,10 +48,14 @@
 			
 			.city-name {
 				font-family: sans-serif;
-				color:aliceblue;
+				color: aliceblue;
 				font-weight: bold;
 				font-style: oblique;
 				font-size: 15px;
+			}
+			
+			.vivek {
+				margin-top: -120px;
 			}
 		</style>
 	</head>
@@ -61,19 +65,21 @@
 			<div class="row justify-content-md-center">
 				<div class="col-12 col-md-auto">
 					<p class="lead subtitle">
-						<strong>One of the world's longest rail networks with <span class="badge badge-primary">57,216 miles</span> of track, <span class="badge badge-primary">7,216 stations</span> and carrying <span class="badge badge-primary">22 million</span> passengers daily.</strong>
+						<strong>One of the world's largest rail networks with <span class="badge badge-primary">92,081 km</span> of track, <span class="badge badge-primary">7,216 stations</span> and carrying <span class="badge badge-primary">22 million</span> passengers daily.</strong>
 					</p><hr>
 				</div>
 			</div>
 			<div class="row justify-content-md-center">
 				<div class="col-12 col-md-auto">
 					<p class="map-title text-center">Total length of railway tracks in each state</p>
-					<div id="map"></div>
+					<div id="map"></div>		
 				</div>
 			</div>
-						
-					
-						
+			<div class="row justify-content-md-center">
+				<div class="col-8 col-md-auto">
+					<p class="lead subtitle vivek">The <span class="font-weight-bold">Dibrugarh–Kanyakumari Vivek Express</span> is the longest running train route in India, covering a distance of <span class="badge badge-primary">4,233 km</span> in <span class="badge badge-primary">82.30 hours</span>.</p>
+				</div>
+			</div>		
 		</div>
 		
 		<script>
@@ -143,7 +149,7 @@
 								.attr("y", 155);
 			
 			var station = svg.append("text")
-								.text("Longest train route")
+								.text("Longest running train route")
 								.attr("x", 660)
 								.attr("y", 210);
 			
