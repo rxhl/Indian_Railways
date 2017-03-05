@@ -68,7 +68,6 @@
 			<div class="row justify-content-md-center">
 				<div class="col-12 col-md-auto">
 					<p class="map-title text-center">Total length of railway tracks in each state</p>
-					<p class="map-description text-center">&amp; top 5 longest rail routes</p>
 					<div id="map"></div>
 				</div>
 			</div>
@@ -82,12 +81,7 @@
 			var w = 1000, h = 1000;
 			
 			var longestRoute = [
-				{sourceLocation: [94.91542,27.485983],targetLocation: [77.549934,8.079252]},
-				{sourceLocation: [74.948848,32.728062],targetLocation: [77.549934,8.079252]},
-				{sourceLocation: [74.948848,32.728062],targetLocation: [74.843008,12.86981]},
-				{sourceLocation: [74.948848,32.728062],targetLocation: [77.685235,8.729526]},
-				{sourceLocation: [94.91542,27.485983],targetLocation: [76.957048,8.505891]},
-				{sourceLocation: [74.981272,31.568179],targetLocation: [77.5913,12.97912]}
+				{sourceLocation: [94.91542,27.485983],targetLocation: [77.549934,8.079252]}
 			];
 						
 			
@@ -149,7 +143,7 @@
 								.attr("y", 155);
 			
 			var station = svg.append("text")
-								.text("Train route")
+								.text("Longest train route")
 								.attr("x", 660)
 								.attr("y", 210);
 			
@@ -200,7 +194,6 @@
 						} else
 							return "#ccc";
 				
-				// Load city data
 				});
 					
 				d3.csv("data/indian-stations.csv", function(data) {
