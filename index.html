@@ -8,9 +8,10 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">			
 		<!-- D3.js and Bootstrap CSS libraries -->
 		<script src="https://d3js.org/d3.v4.min.js"></script>
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">		
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 		<!-- Importing Google fonts -->
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,600%7COswald" rel="stylesheet">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.21.0/d3-legend.min.js"></script>
 		<style>
 			html, body  {
 				margin: 0;
@@ -32,7 +33,7 @@
 				font-size: 30px;
 			}
 
-			.description {
+			.map-description {
 				font-family: "Open Sans", sans-serif;
 				font-size: 22px;
 				margin-top: -15px;
@@ -66,7 +67,8 @@
 			</div>
 			<div class="row justify-content-md-center">
 				<div class="col-12 col-md-auto">
-					<p class="map-title text-center">State-wise length of railway lines</p>
+					<p class="map-title text-center">Total length of railway tracks in each state</p>
+					<p class="map-description text-center">&amp; top 5 longest rail routes</p>
 					<div id="map"></div>
 				</div>
 			</div>
@@ -95,12 +97,12 @@
 							.scale(1500);
 			
 			var color = d3.scaleLinear()
-						.range(["#c6dbef", "#08306b"]); 
+						.range(["#f7fbff", "#08306b"]); 
 
 			//Define default path generator
 			var path = d3.geoPath()
 						.projection(projection);
-						
+			
 			//Create SVG element
 			var svg = d3.select("#map")
 						.append("svg")
@@ -111,6 +113,55 @@
 			
 			var arcs = svg.append("g")
 						.attr("class","arcs");
+			
+			/* Legend begins */
+			var log = d3.scaleLog()
+    				.domain([ 10, 1000, 10000 ])
+    				.range(["#f7fbff", "#08306b"]);
+				
+			svg.append("g")
+  				.attr("class", "legendLog")
+  				.attr("transform", "translate(600,50)");
+
+			var logLegend = d3.legendColor()
+							.cells([10, 50, 100, 500, 1000, 5000, 10000])
+							.orient("horizontal")
+							.shapeWidth(50)
+							.labelFormat(d3.format(".0f"))
+							.title("Total track length (km)")
+							.scale(log);
+
+			svg.select(".legendLog")
+			  .call(logLegend);
+			
+			var stationCircle = svg.append("circle")
+								.attr("cx", 610)
+								.attr("cy", 150)
+								.attr("r", 10)
+								.style("fill", "yellow")
+           						.style("opacity", 0.9)
+								.attr("stroke", "black")
+								.attr("stroke-width, 1")
+								
+			var station = svg.append("text")
+								.text("Railway station")
+								.attr("x", 630)
+								.attr("y", 155);
+			
+			var station = svg.append("text")
+								.text("Train route")
+								.attr("x", 660)
+								.attr("y", 210);
+			
+			var track = svg.append("rect")
+								.attr("x", 600)
+								.attr("y", 200)
+								.attr("height", 10)
+								.attr("width", 50)
+								.attr("fill", "#fc4e2a");
+			
+						
+			/* Legend ends */
 			
 			var data = d3.csv("data/indian-states.csv", function(data) {
 				
@@ -200,6 +251,9 @@
 				});
 				
 			});
+			
+			
+			
 			
 			// Function to create arcs
 			function makeArc(d, sourceName, targetName, bend){
