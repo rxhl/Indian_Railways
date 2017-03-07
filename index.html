@@ -50,11 +50,6 @@
 			.vivek {
 				margin-top: -100px;
 			}
-			
-			.pico{
-  height:109;
-  width:200;
-}
 		</style>
 	</head>
 	<body>
@@ -69,13 +64,13 @@
 			</div>
 			<div class="row justify-content-md-center">
 				<div class="col-12 col-md-auto">
-					<p class="map-title text-center">Total length of railway tracks in each state</p>
+					<p class="map-title text-center">Statewise distribution of railway tracks</p>
 					<div id="map"></div>		
 				</div>
 			</div>
 			<div class="row justify-content-md-center">
 				<div class="col-8 col-md-auto">
-					<p class="lead subtitle vivek">The Dibrugarh–Kanyakumari <span class="badge badge-primary">Vivek Express</span> is the longest running train route in India, covering a distance of <span class="badge badge-primary">4,233 km</span> in <span class="badge badge-primary">82.30 hours</span>.</p>
+					<p class="lead subtitle vivek">The Indian Railways is divided into <span class="badge badge-primary">17 zones</span>. The Dibrugarh–Kanyakumari <span class="badge badge-primary">Vivek Express</span> is the longest running train route in India, spanning <span class="badge badge-primary">4,233 km</span>.</p>
 				</div>
 			</div>	
 			<div class="col-12 col-md-auto">
@@ -88,44 +83,64 @@
 			//Width and height
 			var w = 1000, h = 1000;
 			
-			var zonalTrainRoutes = [
-				{sourceLocation: [94.91542,27.485983],targetLocation: [77.549934,8.079252]}
-			];
-						
-			
-			var projection = d3.geoMercator()
-							.translate([w/2, h/2 - 140])
-							.center([80,25])
-							.scale(1500);
-			
-			var color = d3.scaleLinear()
-						.range(["#f7fbff", "#08306b"]); 
-
-			//Define default path generator
-			var path = d3.geoPath()
-						.projection(projection);
-			
 			//Create SVG element
 			var svg = d3.select("#map")
 						.append("svg")
 						.attr("width", w)
 						.attr("height", h);
 			
+			// Adding groups for layering
 			var states = svg.append("g");
-			var stationNames = svg.append("g");
-			var stations = svg.append("g");
+			var arcs = svg.append("g").attr("class","arcs");
+			var longArc = svg.append("g").attr("class","arcs");
+			var stations = svg.append("g");	
+
+			// Rail routes to HQ (New Delhi) in lon/lat form
+			var zonalTrainRoutes = [
+				{sourceLocation: [77.215956,28.613897],targetLocation: [83.357728,26.610168]}, // NDLS - GOR
+				{sourceLocation: [77.215956,28.613897],targetLocation: [88.347602,22.567746]}, // NDLS - KOL
+				{sourceLocation: [77.215956,28.613897],targetLocation: [78.4983,17.4399]}, // NDLS - SEC
+				{sourceLocation: [77.215956,28.613897],targetLocation: [80.282953,13.079691]}, // NDLS - CHE
+				{sourceLocation: [77.215956,28.613897],targetLocation: [72.832711,18.95238]}, // NDLS - BOM
+				{sourceLocation: [77.215956,28.613897],targetLocation: [75.137985,15.351838]}, // NDLS - HUB
+				{sourceLocation: [77.215956,28.613897],targetLocation: [75.820406,26.916129]}, // NDLS - JAI
+				{sourceLocation: [77.215956,28.613897],targetLocation: [80.107287,23.328862]}, // NDLS - JAB
+				{sourceLocation: [77.215956,28.613897],targetLocation: [81.896732,25.28596]}, // NDLS - ALL
+				{sourceLocation: [77.215956,28.613897],targetLocation: [81.686986,22.395583]}, // NDLS - BIL
+				{sourceLocation: [77.215956,28.613897],targetLocation: [85.825794,20.28315]}, // NDLS - BHU
+				{sourceLocation: [77.215956,28.613897],targetLocation: [85.209009,25.690557]} // NDLS - HAJI			
+			];
 			
-			var arcs = svg.append("g")
-						.attr("class","arcs");
+			var longestRoute = [
+				{sourceLocation: [94.91542,27.485983],targetLocation: [77.549934,8.079252]} // DIB - KAN
+			];
+	
+			var projection = d3.geoMercator()
+							.translate([w/2, h/2 - 140])
+							.center([80,25])
+							.scale(1500);
 			
+			// Colors taken from colorbrewer2
+			var color = d3.scaleLinear()
+						.range(["#f7fbff", "#08306b"]); 
+
+			//Default path generator
+			var path = d3.geoPath()
+						.projection(projection);
+	
 			/* Legend begins */
+			
+			// Legend for choropleth created using http://d3-legend.susielu.com/
+			var legendGroup = svg.append("g")
+								.attr("scale", 2);
+			
 			var log = d3.scaleLog()
     				.domain([ 10, 1000, 10000 ])
     				.range(["#f7fbff", "#08306b"]);
 				
-			svg.append("g")
-  				.attr("class", "legendLog")
-  				.attr("transform", "translate(600,50)");
+			var bars = legendGroup.append("g")
+  						.attr("class", "legendLog")
+  						.attr("transform", "translate(600,50)");
 
 			var logLegend = d3.legendColor()
 							.cells([10, 50, 100, 500, 1000, 5000, 10000])
@@ -135,95 +150,96 @@
 							.title("Total track length (km)")
 							.scale(log);
 
-			svg.select(".legendLog")
-			  .call(logLegend);
+			legendGroup.select(".legendLog").call(logLegend);
 			
-			var stationCircle = svg.append("circle")
-								.attr("cx", 610)
-								.attr("cy", 150)
-								.attr("r", 10)
-								.style("fill", "yellow")
-           						.style("opacity", 0.9)
-								.attr("stroke", "black")
-								.attr("stroke-width, 1")
-			
-			var twoStations = svg.append("circle")
-								.attr("cx", 800)
-								.attr("cy", 150)
-								.attr("r", 10)
-								.style("fill", "green")
-           						.style("opacity", 0.9)
-								.attr("stroke", "black")
-								.attr("stroke-width, 1")
+			var stationCircle = legendGroup.append("circle")
+								.attr("cx", 610).attr("cy", 150).attr("r", 10).style("fill", "yellow")
+           						.style("opacity", 0.9).attr("stroke", "black").attr("stroke-width, 1")
+						
+			var twoStations = legendGroup.append("circle").attr("cx", 800).attr("cy", 150)
+								.attr("r", 10).attr("fill", "brown")
+           						.attr("opacity", 0.9).attr("stroke", "black").attr("stroke-width, 1")
 								
-			var hqText = svg.append("text")
-						.text("Zonal Railway HQ")
-						.attr("x", 630)
-						.attr("y", 155);
-			
-			var stationText = svg.append("text")
-								.text("Train Station")
-								.attr("x", 820)
-								.attr("y", 155);
-			
-			var routeText = svg.append("text")
+			var hqText = legendGroup.append("text").text("Zonal Railways HQ").attr("x", 630).attr("y", 155);
+						
+			var stationText = legendGroup.append("text").text("Railway Station").attr("x", 820).attr("y", 155);
+							
+			var routeText = legendGroup.append("text")
 							.text("Train Route")
-							.attr("x", 660)
+							.attr("x", 860)
 							.attr("y", 208);
 			
-			var track = svg.append("rect")
-								.attr("x", 600)
-								.attr("y", 200)
-								.attr("height", 5)
-								.attr("width", 50)
+			var track = legendGroup.append("rect")
+								.attr("x", 800).attr("y", 200)							
+								.attr("height", 5).attr("width", 50)				
 								.attr("fill", "#fc4e2a");
+			var longestTrack = legendGroup.append("rect")
+								.attr("x", 600).attr("y", 250)							
+								.attr("height", 5).attr("width", 50)				
+								.attr("fill", "green");
+			var longestRouteText = svg.append("text")
+							.text("Longest rail route in India").attr("x", 660).attr("y", 258);				
 			
-						
+			var delhiHQ = legendGroup.append("rect")
+								.attr("x", 601).attr("y", 190)
+								.attr("height", 20).attr("width", 20)
+								.attr("fill", "yellow").attr("stroke-width", 1).attr("stroke", "black");
+			
+			var delhiText = legendGroup.append("text")
+							.text("National Railways HQ").attr("x", 630).attr("y", 208);
+	
 			/* Legend ends */
 			
-			d3.csv("data/indian-states.csv", function(data) {
-				
-				color.domain([
-					d3.min(data, function(d) { return d.value; }),
-					d3.max(data, function(d) { return d.value; })
-				]); 
+			// Loading three datasets using queue
 			
-			
-				//Load in GeoJSON data
-				d3.json("data/india.json", function(json) {
-				
-				for(var i = 0; i < data.length; i++) {
-					var dataSet = data[i].state;
-					var dataValue = parseFloat(data[i].value);
-							
-					for (var j = 0; j < json.features.length; j++) {
-						var jsonState = json.features[j].properties.NAME_1;
-						if(dataSet == jsonState) {
-							json.features[j].properties.value = dataValue;
-							break;
+			d3.queue()
+				.defer(d3.json, "data/india.geojson")
+				.defer(d3.csv, "data/indian-states.csv")
+				.defer(d3.csv, "data/indian-stations.csv")
+				.await(function(error, json, data, citydata) {
+    				if (error) {
+        				console.error('Oh dear, something went wrong: ' + error);
+    				}
+    				else {
+						
+					// Mapping track length of each state (indian-states.csv) to India's GeoJSON states(india.json) in order to create a choropleth
+					for(var i = 0; i < data.length; i++) {
+						var dataSet = data[i].state;
+						var dataValue = parseFloat(data[i].value);
+
+						for (var j = 0; j < json.features.length; j++) {
+							var jsonState = json.features[j].properties.NAME_1;
+							if(dataSet == jsonState) {
+								json.features[j].properties.value = dataValue;
+								break;
+							}
 						}
-					}
+					} 
 					
-				} 
-				//Bind data and create one path per GeoJSON feature
-				states.selectAll("path")
-				   .data(json.features)
-				   .enter()
-				   .append("path")
-				   .attr("d", path)
-				   .attr("fill", function(d) {
-						var value = d.properties.value;
-						if(value) {
-							return color(value);
-						} else
-							return "#ccc";
-				
-				});
+					// Defining colors for the choropleth
+					color.domain([
+						d3.min(data, function(d) { return d.value; }),
+						d3.max(data, function(d) { return d.value; })
+					]); 
+
+					//Bind data and create one path per GeoJSON feature
+					states.selectAll("path")
+					   .data(json.features)
+					   .enter()
+					   .append("path")
+					   .attr("d", path)
+					   .attr("fill", function(d) {
+							var value = d.properties.value;
+							if(value) {
+								return color(value);
+							} else
+								return "#ccc";
+
+					});
 					
-				d3.csv("data/indian-stations.csv", function(data) {
-										
-					svg.selectAll("stations")
-						.data(data)
+					// Draw circles for each station					
+					stations.selectAll(".indian-stations")
+						.data(citydata)
 						.enter()
 						.append("circle")
 						.attr("cx", function(d) {
@@ -233,18 +249,31 @@
 							return projection([d.lon, d.lat])[1];
 						})
 					
-						.attr("r", 8)
+						.attr("r", function(d) {
+							if (d.name == "New Delhi") {
+								return 0;
+							} else return 8;
+						})
+						
 						.style("fill", function(d) {
 							if (d.name == "Dibrugarh" || d.name == "Kanyakumari") {
-							return "green";
+							return "brown";
 						} else return "yellow";
 						})
-           				.style("opacity", 0.85)
+           				
+						.style("opacity", 0.95)
 						.attr("stroke", "black")
 						.attr("stroke-width, 1");
 					
-					svg.selectAll("stationNames")
-								.data(data)
+					// Draw square for New Delhi (Main HQ)
+					var Delhi = svg.append("rect")
+								.attr("x", 415.113).attr("y", 245.969)
+								.attr("height", 20).attr("width", 20)
+								.attr("fill", "yellow").attr("stroke-width", 1).attr("stroke", "black");
+					
+					// Write city names
+					stations.selectAll(".indian-stations")
+								.data(citydata)
 								.enter()
 								.append("text")
 								.text(function(d) { return d.name; })
@@ -257,66 +286,62 @@
 								.attr("y", function(d) { 
 									return projection([d.lon, d.lat])[1] + 15; 
 								})
-								.attr("class", "city-name");
-								
-					});
-					
-					d3.json("data/zonalTrainRoutes.json", function(json) {
+								.attr("class", "city-name");		
 						
-					// makeArc
-
-					function makeArc(d, sourceName, targetName, bend){
-					var sourceLngLat = d[sourceName],
-						targetLngLat = d[targetName];
-
-					if (targetLngLat && sourceLngLat) {
-						var sourceXY = projection(sourceLngLat),
-							targetXY = projection(targetLngLat);
-
-						if (!targetXY) console.log(d, targetLngLat, targetXY)
-						var sourceX = sourceXY[0], sourceY = sourceXY[1];
-
-						var targetX = targetXY[0], targetY = targetXY[1];
-
-						var dx = targetX - sourceX, dy = targetY - sourceY, dr = Math.sqrt(dx * dx + dy * dy)*bend;
-
-						var west_of_source = (targetX - sourceX) < 0;
-
-						if (west_of_source) 
-						{
-							return "M" + targetX + "," + targetY + "A" + dr + "," + dr + " 0 0,1 " + sourceX + "," + sourceY;
-						}
-						else {
-							return "M" + sourceX + "," + sourceY + "A" + dr + "," + dr + " 0 0,1 " + targetX + "," + targetY;
-						}
-					} 
-					else {
-						return "M0,0,l0,0z";
-						}
-					} 
-					
-							arcs.selectAll("path")
-							.data(json)
-							.enter()
-							.append("path")
-							.attr("fill", "none")
-							.attr("stroke", "#fc4e2a").attr("stroke-width", "3")
-							.attr('d', function(d) { 
-							return makeArc(d, d.sourceLocation, d.targetLocation, 1); 
-								
+					// Draw arcs between stations
+					arcs.selectAll("path")
+						.data(zonalTrainRoutes)
+						.enter().append("path").attr("fill", "none")
+						.attr("stroke", "#fc4e2a").attr("stroke-width", "3")
+						.attr('d', function(d) { 
+						return makeArc(d, 'sourceLocation', 'targetLocation', 1); 
 						});
-					});
+						
+					longArc.selectAll("path")
+						.data(longestRoute)
+						.enter().append("path").attr("fill", "none")
+						.attr("stroke", "green").attr("stroke-width", "3")
+						.attr('d', function(d) { 
+						return makeArc(d, 'sourceLocation', 'targetLocation', 1); 
+						});
+					}
 				});
-			});
-	
-			// Function to create arcs
 			
+			// Function to create arcs
+			function makeArc(d, sourceName, targetName, bend){
+			var sourceLngLat = d[sourceName],
+				targetLngLat = d[targetName];
+
+			if (targetLngLat && sourceLngLat) {
+				var sourceXY = projection(sourceLngLat),
+					targetXY = projection(targetLngLat);
+
+				if (!targetXY) console.log(d, targetLngLat, targetXY)
+				var sourceX = sourceXY[0], sourceY = sourceXY[1];
+					
+				var targetX = targetXY[0], targetY = targetXY[1];
+						
+				var dx = targetX - sourceX, dy = targetY - sourceY, dr = Math.sqrt(dx * dx + dy * dy)*bend;
+
+				var west_of_source = (targetX - sourceX) < 0;
+
+				if (west_of_source) 
+				{
+					return "M" + targetX + "," + targetY + "A" + dr + "," + dr + " 0 0,1 " + sourceX + "," + sourceY;
+				}
+				else {
+					return "M" + sourceX + "," + sourceY + "A" + dr + "," + dr + " 0 0,1 " + targetX + "," + targetY;
+				}
+			} 
+			else {
+				return "M0,0,l0,0z";
+			}
+		} 
 		</script>
 		
 		<!-- jQuery and Bootstrap libraries -->	
 		<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
-		
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>		
 	</body>
 </html>
