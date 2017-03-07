@@ -70,7 +70,7 @@ rs2376, sk2889, ss3629
 			</div>
 			<div class="row justify-content-md-center">
 				<div class="col-12 col-md-auto">
-					<p class="map-title text-center">State-	wise distribution of railway tracks</p>
+					<p class="map-title text-center">State-wise distribution of railway tracks</p>
 					<div id="map"></div>		
 				</div>
 			</div>
@@ -212,6 +212,13 @@ rs2376, sk2889, ss3629
 			
 			var delhiText = legendGroup.append("text")
 							.text("National Railways HQ").attr("x", 630).attr("y", 208);
+			
+			var worldLegend = worldSvg.append("text")
+							.text("Area = Size (km)").attr("x", 70).attr("y", 400)
+							.attr("fill", "black");
+			var worldSize = worldSvg.append("text")
+							.text("[1.27, 250000]").attr("x", 70).attr("y", 420)
+							.attr("fill", "black");
 	
 			/* Legend ends */
 			
