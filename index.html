@@ -39,13 +39,6 @@
 				margin-top: -15px;
 			}
 
-			.arcs path {
-				  stroke-width: 6px;
-				  stroke: #fc4e2a;
-				  pointer-events: none;
-				  fill: none;
-			}
-			
 			.city-name {
 				font-family: sans-serif;
 				color: aliceblue;
@@ -55,8 +48,13 @@
 			}
 			
 			.vivek {
-				margin-top: -120px;
+				margin-top: -100px;
 			}
+			
+			.pico{
+  height:109;
+  width:200;
+}
 		</style>
 	</head>
 	<body>
@@ -77,14 +75,12 @@
 			</div>
 			<div class="row justify-content-md-center">
 				<div class="col-8 col-md-auto">
-					<p class="lead subtitle vivek">The Dibrugarh–Kanyakumari <span class="font-weight-bold">Vivek Express</span> is the longest running train route in India, covering a distance of <span class="badge badge-primary">4,233 km</span> in <span class="badge badge-primary">82.30 hours</span>.</p>
+					<p class="lead subtitle vivek">The Dibrugarh–Kanyakumari <span class="badge badge-primary">Vivek Express</span> is the longest running train route in India, covering a distance of <span class="badge badge-primary">4,233 km</span> in <span class="badge badge-primary">82.30 hours</span>.</p>
 				</div>
 			</div>	
-			<div class="row justify-content-md-center">
-				<div class="col-12 col-md-auto">
-					<p class="map-title text-center">World's largest railway networks</p>
-					<div id="histogram"></div>		
-				</div>
+			<div class="col-12 col-md-auto">
+				<hr>
+				<p class="text-center">Data: </p>
 			</div>
 		</div>
 		
@@ -92,7 +88,7 @@
 			//Width and height
 			var w = 1000, h = 1000;
 			
-			var longestRoute = [
+			var zonalTrainRoutes = [
 				{sourceLocation: [94.91542,27.485983],targetLocation: [77.549934,8.079252]}
 			];
 						
@@ -114,12 +110,10 @@
 						.append("svg")
 						.attr("width", w)
 						.attr("height", h);
-			var svgbar = d3.select("#histogram")
-						.append("svg")
-						.attr("width", w)
-						.attr("height", h);
 			
 			var states = svg.append("g");
+			var stationNames = svg.append("g");
+			var stations = svg.append("g");
 			
 			var arcs = svg.append("g")
 						.attr("class","arcs");
@@ -152,21 +146,35 @@
            						.style("opacity", 0.9)
 								.attr("stroke", "black")
 								.attr("stroke-width, 1")
+			
+			var twoStations = svg.append("circle")
+								.attr("cx", 800)
+								.attr("cy", 150)
+								.attr("r", 10)
+								.style("fill", "green")
+           						.style("opacity", 0.9)
+								.attr("stroke", "black")
+								.attr("stroke-width, 1")
 								
-			var station = svg.append("text")
-								.text("Railway station")
-								.attr("x", 630)
+			var hqText = svg.append("text")
+						.text("Zonal Railway HQ")
+						.attr("x", 630)
+						.attr("y", 155);
+			
+			var stationText = svg.append("text")
+								.text("Train Station")
+								.attr("x", 820)
 								.attr("y", 155);
 			
-			var station = svg.append("text")
-								.text("Longest running train route")
-								.attr("x", 660)
-								.attr("y", 210);
+			var routeText = svg.append("text")
+							.text("Train Route")
+							.attr("x", 660)
+							.attr("y", 208);
 			
 			var track = svg.append("rect")
 								.attr("x", 600)
 								.attr("y", 200)
-								.attr("height", 10)
+								.attr("height", 5)
 								.attr("width", 50)
 								.attr("fill", "#fc4e2a");
 			
@@ -213,47 +221,52 @@
 				});
 					
 				d3.csv("data/indian-stations.csv", function(data) {
-					
-					svg.selectAll("circle")
+										
+					svg.selectAll("stations")
 						.data(data)
 						.enter()
 						.append("circle")
 						.attr("cx", function(d) {
-						return projection([d.lon, d.lat])[0];
+							return projection([d.lon, d.lat])[0];
 						})
-					
 						.attr("cy", function(d) {
-						return projection([d.lon, d.lat])[1];
+							return projection([d.lon, d.lat])[1];
 						})
 					
-						.attr("r", 10)
-						.style("fill", "yellow")
-           				.style("opacity", 0.9)
+						.attr("r", 8)
+						.style("fill", function(d) {
+							if (d.name == "Dibrugarh" || d.name == "Kanyakumari") {
+							return "green";
+						} else return "yellow";
+						})
+           				.style("opacity", 0.85)
 						.attr("stroke", "black")
 						.attr("stroke-width, 1");
 					
-					svg.selectAll("text")
+					svg.selectAll("stationNames")
 								.data(data)
 								.enter()
 								.append("text")
 								.text(function(d) { return d.name; })
 								.attr("x", function(d) { 
-									if(d.name == "Thiruvananthapuram") {
-										return projection([d.lon, d.lat])[0] - 160;
+									if (d.name == "New Delhi") {
+										return projection([d.lon, d.lat])[0] - 90;
 									} else
 									return projection([d.lon, d.lat])[0] + 10; 
 								})
 								.attr("y", function(d) { 
-									return projection([d.lon, d.lat])[1] + 18; 
+									return projection([d.lon, d.lat])[1] + 15; 
 								})
 								.attr("class", "city-name");
 								
 					});
 					
 					arcs.selectAll("path")
-					.data(longestRoute)
+					.data(zonalTrainRoutes)
 					.enter()
 					.append("path")
+					.attr("fill", "none")
+					.attr("stroke", "#fc4e2a").attr("stroke-width", "3")
 					.attr('d', function(d) { 
 					return makeArc(d, 'sourceLocation', 'targetLocation', 1); 
 					});
@@ -291,10 +304,9 @@
 				return "M0,0,l0,0z";
 			}
 		} 
-			
 		</script>
 		
-		<!-- jQuery library -->	
+		<!-- jQuery and Bootstrap libraries -->	
 		<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
