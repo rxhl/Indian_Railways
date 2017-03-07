@@ -11,13 +11,9 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 		<!-- Importing Google fonts -->
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,600%7COswald" rel="stylesheet">
+		<!-- Importing D3 Legend library by Susie Lu -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.21.0/d3-legend.min.js"></script>
 		<style>
-			html, body  {
-				margin: 0;
-				padding: 0;
-			}
-
 			.title {
 				padding-top: 10px;
 				font-family: "Oswald", sans-serif;
@@ -296,7 +292,8 @@
 						.attr('d', function(d) { 
 						return makeArc(d, 'sourceLocation', 'targetLocation', 1); 
 						});
-						
+					
+					// Draw arc for longest train route
 					longArc.selectAll("path")
 						.data(longestRoute)
 						.enter().append("path").attr("fill", "none")
