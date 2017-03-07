@@ -132,12 +132,14 @@ rs2376, sk2889, ss3629
 			var longestRoute = [
 				{sourceLocation: [94.91542,27.485983],targetLocation: [77.549934,8.079252]} // DIB - KAN
 			];
-	
+		
+			// Projection for India
 			var projection = d3.geoMercator()
 							.translate([w/2, h/2 - 140])
 							.center([80,25])
 							.scale(1500);
 			
+			// Projection for world
 			var worldProjection = d3.geoEquirectangular()
 								.translate([w/2, h/2 - 200])
 								.precision(.1)
@@ -147,10 +149,11 @@ rs2376, sk2889, ss3629
 			var color = d3.scaleLinear()
 						.range(["#f7fbff", "#08306b"]); 
 
-			//Default path generator
+			//India's path generator
 			var path = d3.geoPath()
 						.projection(projection);
 			
+			//World's path generator
 			var worldPath = d3.geoPath().projection(worldProjection);
 	
 			/* Legend begins */
