@@ -46,6 +46,11 @@
 			.vivek {
 				margin-top: -100px;
 			}
+			
+			#worldMap {
+				background-color: skyblue;
+				opacity: 0.5;	
+			}
 		</style>
 	</head>
 	<body>
@@ -68,9 +73,15 @@
 				<div class="col-8 col-md-auto">
 					<p class="lead subtitle vivek">The Indian Railways is divided into <span class="badge badge-primary">17 zones</span>. The Dibrugarh–Kanyakumari <span class="badge badge-primary">Vivek Express</span> is the longest running train route in India, spanning <span class="badge badge-primary">4,233 km</span>.</p>
 				</div>
-			</div>	
-			<div class="col-12 col-md-auto">
-				<hr>
+			</div>
+			<div class="row justify-content-md-center">
+				<div class="col-12 col-md-auto">
+					<hr>
+					<p class="map-title text-center">Indian vs other railway netorks</p>
+					<p class="lead text-center">A comparison of countries by rail transport network size.</p>
+					<div id="worldMap"></div>
+					<hr>	
+				</div>
 			</div>
 		</div>
 		
@@ -78,17 +89,25 @@
 			//Width and height
 			var w = 1000, h = 1000;
 			
-			//Create SVG element
+			//Create SVG element for India's map
 			var svg = d3.select("#map")
 						.append("svg")
 						.attr("width", w)
 						.attr("height", h);
 			
+			//Create SVG element for World's map
+			var worldSvg = d3.select("#worldMap")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h - 400);
+			
 			// Adding groups for layering
 			var states = svg.append("g");
 			var arcs = svg.append("g").attr("class","arcs");
 			var longArc = svg.append("g").attr("class","arcs");
-			var stations = svg.append("g");	
+			var stations = svg.append("g");
+			var world = worldSvg.append("g")
+			var countries = worldSvg.append("g");	
 
 			// Rail routes to HQ (New Delhi) in lon/lat form
 			var zonalTrainRoutes = [
@@ -115,6 +134,11 @@
 							.center([80,25])
 							.scale(1500);
 			
+			var worldProjection = d3.geoEquirectangular()
+								.translate([w/2, h/2 - 200])
+								.precision(.1)
+								.scale(153);
+			
 			// Colors taken from colorbrewer2
 			var color = d3.scaleLinear()
 						.range(["#f7fbff", "#08306b"]); 
@@ -122,6 +146,8 @@
 			//Default path generator
 			var path = d3.geoPath()
 						.projection(projection);
+			
+			var worldPath = d3.geoPath().projection(worldProjection);
 	
 			/* Legend begins */
 			
@@ -153,7 +179,7 @@
 						
 			var twoStations = legendGroup.append("circle").attr("cx", 800).attr("cy", 150)
 								.attr("r", 10).attr("fill", "brown")
-           						.attr("opacity", 0.9).attr("stroke", "black").attr("stroke-width, 1")
+           						.attr("opacity", 0.9).attr("stroke", "black").attr("stroke-width, 1");
 								
 			var hqText = legendGroup.append("text").text("Zonal Railways HQ").attr("x", 630).attr("y", 155);
 						
@@ -191,7 +217,9 @@
 				.defer(d3.json, "data/india.geojson")
 				.defer(d3.csv, "data/indian-states.csv")
 				.defer(d3.csv, "data/indian-stations.csv")
-				.await(function(error, json, data, citydata) {
+				.defer(d3.json, "data/world.json")
+				.defer(d3.csv, "data/world-countries.csv")
+				.await(function(error, json, data, citydata, worldJSON, countrydata) {
     				if (error) {
         				console.error('Oh dear, something went wrong: ' + error);
     				}
@@ -231,6 +259,41 @@
 								return "#ccc";
 
 					});
+						
+					// Drawing world map
+					world.selectAll("worldPath")
+						.data(worldJSON.features)
+						.enter().append("path")
+						.attr("d", worldPath)
+						.attr("fill","#eaeaea")
+						.attr("stroke","black").attr("stroke-width", 0.5);
+						
+					// Drawing country circle
+					countries.selectAll(".world-countries")
+						.data(countrydata)
+						.enter()
+						.append("circle")
+						.attr("cx", function(d) {
+							return worldProjection([d.lon, d.lat])[0];
+						})
+						.attr("cy", function(d) {
+							return worldProjection([d.lon, d.lat])[1];
+						})
+					
+						.attr("r", function(d) {
+							return Math.sqrt(d.size / 100);
+						})
+						
+						.attr("fill", function(d) {
+							if (d.name == "India") {
+							return "green";
+						} else return "yellow";
+						})
+           				
+						.attr("opacity", 0.8)
+						.attr("stroke", "black")
+						.attr("stroke-width, 1");
+
 					
 					// Draw circles for each station					
 					stations.selectAll(".indian-stations")
@@ -250,13 +313,13 @@
 							} else return 7;
 						})
 						
-						.style("fill", function(d) {
+						.attr("fill", function(d) {
 							if (d.name == "Dibrugarh" || d.name == "Kanyakumari") {
 							return "brown";
 						} else return "yellow";
 						})
            				
-						.style("opacity", 0.95)
+						.attr("opacity", 0.95)
 						.attr("stroke", "black")
 						.attr("stroke-width, 1");
 					
