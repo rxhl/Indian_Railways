@@ -363,7 +363,7 @@ rs2376, sk2889, ss3629
 					arcs.selectAll("path")
 						.data(zonalTrainRoutes)
 						.enter().append("path").attr("fill", "none")
-						.attr("stroke", "#fc4e2a").attr("stroke-width", "3")
+						.attr("stroke", "#fc4e2a").attr("stroke-width", "3").attr("opacity", 0.8)
 						.attr('d', function(d) { 
 						return makeArc(d, 'sourceLocation', 'targetLocation', 4); 
 						});
