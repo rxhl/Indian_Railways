@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css?family=Hind');
+
+
+.title {
+				padding-top: 30px;
+				font-family: 'Hind', sans-serif;
+			}
+
+			.subtitle {
+				font-family: "Open Sans", sans-serif;
+			}
+
+			.map-title {
+				font-family: "Oswald", sans-serif;
+				font-size: 30px;
+			}
+
+			.map-description {
+				font-family: "Open Sans", sans-serif;
+				font-size: 22px;
+				margin-top: -15px;
+			}
+
+			.city-name {
+				font-family: sans-serif;
+				color: aliceblue;
+				font-weight: bold;
+				font-style: oblique;
+				font-size: 15px;
+			}
+			
+			.vivek {
+				margin-top: -100px;
+			}
+			
+			#worldMap {
+				background-color: skyblue;
+				opacity: 0.5;	
+			}
+	
+body {
+	margin-bottom: 20px;
+}
