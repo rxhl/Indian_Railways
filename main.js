@@ -71,7 +71,7 @@
 								.attr("scale", 2);
 			
 			var log = d3.scaleLog()
-    				.domain([ 10, 1000, 10000 ])
+    				.domain([10, 1000, 10000])
     				.range(["#f7fbff", "#08306b"]);
 				
 			var bars = legendGroup.append("g")
@@ -90,7 +90,7 @@
 			
 			var stationCircle = legendGroup.append("circle")
 								.attr("cx", 610).attr("cy", 150).attr("r", 10).style("fill", "yellow")
-           						.style("opacity", 0.9).attr("stroke", "black").attr("stroke-width, 1")
+           						.style("opacity", 0.9).attr("stroke", "black").attr("stroke-width, 1");
 						
 			var twoStations = legendGroup.append("circle").attr("cx", 800).attr("cy", 150)
 								.attr("r", 10).attr("fill", "brown")
@@ -100,7 +100,7 @@
 						
 			var stationText = legendGroup.append("text").text("Railway Station").attr("x", 820).attr("y", 155);
 							
-			var routeText = legendGroup.append("text")
+			/*var routeText = legendGroup.append("text")
 							.text("Train Route")
 							.attr("x", 860)
 							.attr("y", 208);
@@ -108,7 +108,7 @@
 			var track = legendGroup.append("rect")
 								.attr("x", 800).attr("y", 200)							
 								.attr("height", 5).attr("width", 50)				
-								.attr("fill", "#fc4e2a");
+								.attr("fill", "#fc4e2a");*/
 			var longestTrack = legendGroup.append("rect")
 								.attr("x", 600).attr("y", 250)							
 								.attr("height", 5).attr("width", 50)				
@@ -268,13 +268,13 @@
 								.attr("class", "city-name");		
 						
 					// Draw arcs between stations
-					arcs.selectAll("path")
+					/*arcs.selectAll("path")
 						.data(zonalTrainRoutes)
 						.enter().append("path").attr("fill", "none")
 						.attr("stroke", "#fc4e2a").attr("stroke-width", "3")
 						.attr('d', function(d) { 
 						return makeArc(d, 'sourceLocation', 'targetLocation', 4); 
-						});
+						});*/
 					
 					// Draw arc for longest train route
 					longArc.selectAll("path")
