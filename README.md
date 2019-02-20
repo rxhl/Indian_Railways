@@ -1,3 +1,3 @@
 # Indian_Railways
 A data visualization for Indian Railways. 
-http://www.rahulxsharma.com/Indian_Railways/
+https://rxhl.github.io/Indian_Railways/
